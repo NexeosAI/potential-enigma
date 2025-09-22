@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>McCaigs Education AI Suite – Licensing</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://js.stripe.com/v3/"></script>
+    <script defer src="https://www.paypal.com/sdk/js?client-id=PAYPAL_PLACEHOLDER"></script>
+  </head>
+  <body class="bg-slate-950 text-slate-100 min-h-screen">
+    <main class="max-w-4xl mx-auto px-4 py-16" id="app">
+      <header class="text-center space-y-4">
+        <h1 class="text-4xl font-semibold" id="brandName">McCaigs Education AI Suite</h1>
+        <p class="text-slate-300" id="brandTagline">Local-first AI tools for students and educators.</p>
+      </header>
+
+      <section class="mt-12 grid md:grid-cols-2 gap-8">
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
+          <h2 class="text-2xl font-semibold">Current Tier</h2>
+          <p id="tierPrice" class="text-lg">Loading pricing...</p>
+          <div class="space-y-2">
+            <div class="flex justify-between text-sm text-slate-400">
+              <span>Licences sold</span>
+              <span id="tierProgressLabel">0 / 0</span>
+            </div>
+            <div class="w-full bg-slate-800 rounded-full h-3">
+              <div
+                id="tierProgressBar"
+                class="bg-amber-400 h-3 rounded-full"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+          <button
+            id="stripeButton"
+            class="w-full py-3 rounded-lg bg-amber-500 text-slate-950 font-semibold hover:bg-amber-400 transition"
+          >
+            Purchase with Stripe
+          </button>
+          <div id="paypalContainer"></div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
+          <h2 class="text-2xl font-semibold">What you receive</h2>
+          <ul class="space-y-3 text-slate-300 list-disc list-inside">
+            <li>Lifetime access to StudentlyAI mobile + desktop</li>
+            <li>Local GGUF models with cloud fallback</li>
+            <li>Access to add-on marketplace</li>
+            <li>3 device activations with offline grace mode</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <script type="module">
+      const BRAND_CONFIG = {
+        studentlyai: {
+          name: 'StudentlyAI',
+          tagline: 'Your local-first study companion.',
+          primary: 'rgb(249 115 22)',
+          currency: '£'
+        },
+        studentsai_uk: {
+          name: 'StudentsAI UK',
+          tagline: 'Academic excellence for UK learners.',
+          primary: 'rgb(30 58 138)',
+          currency: '£'
+        },
+        studentsai_us: {
+          name: 'StudentsAI US',
+          tagline: 'Study smarter with trusted AI.',
+          primary: 'rgb(3 105 161)',
+          currency: '$'
+        }
+      };
+
+      const urlParams = new URLSearchParams(window.location.search);
+      const brandKey = urlParams.get('brand') ?? 'studentlyai';
+      const brand = BRAND_CONFIG[brandKey] ?? BRAND_CONFIG.studentlyai;
+
+      const brandNameEl = document.getElementById('brandName');
+      const brandTaglineEl = document.getElementById('brandTagline');
+      const tierPriceEl = document.getElementById('tierPrice');
+      const tierProgressLabel = document.getElementById('tierProgressLabel');
+      const tierProgressBar = document.getElementById('tierProgressBar');
+
+      document.body.style.setProperty('--brand-primary', brand.primary);
+      brandNameEl.textContent = brand.name;
+      brandTaglineEl.textContent = brand.tagline;
+
+      async function fetchTier() {
+        // TODO: Replace with Supabase `get_current_tier` call.
+        return {
+          price: 29,
+          cap: 10000,
+          sold: 2000
+        };
+      }
+
+      fetchTier().then((tier) => {
+        tierPriceEl.textContent = `${brand.currency}${tier.price} lifetime`;
+        tierProgressLabel.textContent = `${tier.sold.toLocaleString()} / ${tier.cap?.toLocaleString() ?? '∞'}`;
+        const progress = Math.min(100, (tier.sold / tier.cap) * 100);
+        tierProgressBar.style.width = `${Number.isFinite(progress) ? progress : 0}%`;
+        tierProgressBar.style.backgroundColor = brand.primary;
+      });
+
+      document.getElementById('stripeButton').addEventListener('click', async () => {
+        // TODO: call backend checkout endpoint and redirect.
+        alert('Stripe checkout integration coming soon.');
+      });
+
+      if (window.paypal) {
+        window.paypal.Buttons({
+          createOrder: () => {
+            // TODO: Replace with backend call generating PayPal order.
+            return Promise.resolve('ORDER-MOCK');
+          },
+          onApprove: () => {
+            alert('PayPal purchase flow coming soon.');
+          }
+        }).render('#paypalContainer');
+      }
+    </script>
+  </body>
+</html>
