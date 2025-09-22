@@ -115,9 +115,7 @@ class _ModelsTabState extends State<_ModelsTab> {
             ],
           ),
           const SizedBox(height: 24),
-          Expanded(
-            child: ListView(children: tiles),
-          ),
+          Expanded(child: ListView(children: tiles)),
         ],
       ),
     );

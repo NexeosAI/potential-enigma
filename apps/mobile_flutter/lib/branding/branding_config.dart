@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 enum AppBrand {
-  studentlyai,
-  studentsaiUk,
-  studentsaiUs,
+  studentlyAi,
+  studentsAiUk,
+  studentsAiUs,
 }
 
 enum SpellingVariant { british, american }
@@ -12,30 +12,31 @@ extension AppBrandExtension on AppBrand {
   static AppBrand fromKey(String key) {
     switch (key.toLowerCase()) {
       case 'studentsai_uk':
-        return AppBrand.studentsaiUk;
+        return AppBrand.studentsAiUk;
       case 'studentsai_us':
-        return AppBrand.studentsaiUs;
+        return AppBrand.studentsAiUs;
       case 'studentlyai':
       default:
-        return AppBrand.studentlyai;
+        return AppBrand.studentlyAi;
     }
   }
 
   BrandConfig get config {
     switch (this) {
-      case AppBrand.studentlyai:
+      case AppBrand.studentlyAi:
         return const BrandConfig(
           key: 'studentlyai',
           displayName: 'StudentlyAI',
           tagline: 'Your local-first study companion.',
           currency: '£',
           tierPrices: [29, 49, 99, 149],
-          primaryColor: Color(0xFFF97316),
+          primaryColor: Color(0xFFF97316), // Orange500
           accentColor: Colors.white,
           brightness: Brightness.light,
           spelling: SpellingVariant.british,
         );
-      case AppBrand.studentsaiUk:
+
+      case AppBrand.studentsAiUk:
         return const BrandConfig(
           key: 'studentsai_uk',
           displayName: 'StudentsAI UK',
@@ -47,12 +48,13 @@ extension AppBrandExtension on AppBrand {
           brightness: Brightness.dark,
           spelling: SpellingVariant.british,
         );
-      case AppBrand.studentsaiUs:
+
+      case AppBrand.studentsAiUs:
         return const BrandConfig(
           key: 'studentsai_us',
           displayName: 'StudentsAI US',
           tagline: 'Study smarter with trusted AI.',
-          currency: r'$',
+          currency: '\$', // escaped for Dart
           tierPrices: [29, 49, 99, 149],
           primaryColor: Color(0xFF0369A1),
           accentColor: Color(0xFF38BDF8),
