@@ -1,3 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
+codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -8,6 +12,14 @@ import '../sync/drive_adapter.dart';
 import '../sync/institution_adapter.dart';
 import '../sync/p2p_sync.dart';
 
+ codex/create-working-plan-from-agents.md-0qnebh
+
+import 'package:flutter/material.dart';
+
+import '../../branding/branding_config.dart';
+main
+
+main
 class SettingsShell extends StatefulWidget {
   const SettingsShell({super.key, required this.brand});
 
@@ -55,7 +67,15 @@ class _SettingsShellState extends State<SettingsShell>
         controller: _controller,
         children: [
           const _ModelsTab(),
+codex/create-working-plan-from-agents.md-0qnebh
           MarketplaceTab(brand: widget.brand),
+
+ codex/create-working-plan-from-agents.md-gyf1jn
+          MarketplaceTab(brand: widget.brand),
+
+          const _AddOnsTab(),
+ main
+main
           const _SyncTab(),
           _AccountTab(config: config),
         ],
@@ -121,6 +141,10 @@ class _ModelsTabState extends State<_ModelsTab> {
             ],
           ),
           const SizedBox(height: 24),
+codex/create-working-plan-from-agents.md-0qnebh
+
+codex/create-working-plan-from-agents.md-gyf1jn
+ main
           Expanded(
             child: ListView(children: tiles),
           ),
@@ -263,6 +287,62 @@ class _SyncTabState extends State<_SyncTab> {
           onPressed: _provisionInstitution,
           icon: const Icon(Icons.school),
           label: const Text('Request provisioning'),
+codex/create-working-plan-from-agents.md-0qnebh
+
+
+          Expanded(child: ListView(children: tiles)),
+        ],
+      ),
+    );
+  }
+}
+
+class _AddOnsTab extends StatelessWidget {
+  const _AddOnsTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
+        Card(
+          child: ListTile(
+            title: Text('Research Pack'),
+            subtitle: Text('Deep search, references, and academic tone.'),
+            trailing: TextButton(onPressed: null, child: Text('Coming Soon')),
+          ),
+        ),
+        Card(
+          child: ListTile(
+            title: Text('Career Pack'),
+            subtitle: Text('CV builder, interview prep, and job tracking.'),
+            trailing: TextButton(onPressed: null, child: Text('Coming Soon')),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _SyncTab extends StatelessWidget {
+  const _SyncTab();
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: const [
+        ListTile(
+          leading: Icon(Icons.qr_code_2),
+          title: Text('Peer-to-peer sync'),
+          subtitle: Text('Generate a QR code to sync devices securely.'),
+        ),
+        ListTile(
+          leading: Icon(Icons.cloud_outlined),
+          title: Text('Cloud drives'),
+          subtitle: Text('Connect Google Drive, iCloud, or Dropbox.'),
+main
+main
         ),
       ],
     );

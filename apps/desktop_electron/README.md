@@ -1,5 +1,6 @@
 # Desktop Electron Scaffold
 
+codex/create-working-plan-from-agents.md-0qnebh
 This directory now contains the starter Electron shell for the McCaigs
 Education AI Suite. The scaffold focuses on brand-aware navigation with module
 placeholders that mirror the mobile experience. React is not yet wired in; the
@@ -34,3 +35,12 @@ Future work should:
    plugin control.
 3. Integrate n8n and ActivePieces launchers alongside marketplace-driven
    extensions.
+
+This directory reserves space for the Electron/React desktop experience. Future
+iterations should:
+
+1. Initialise an Electron + Vite/React project.
+2. Mirror navigation with the mobile app (chat, workspace, settings).
+3. Integrate MCP plugins and external automation services (n8n, ActivePieces).
+4. Provide brand-aware theming matching `branding_config.dart` in the Flutter app.
+main
