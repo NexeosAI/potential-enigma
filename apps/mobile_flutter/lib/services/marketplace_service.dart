@@ -1,4 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Client abstraction for marketplace inventory and purchases.
@@ -161,6 +164,8 @@ List<dynamic> _coerceList(dynamic response) {
     return response;
   }
   return [response];
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 /// Client abstraction for marketplace inventory and purchases.
 class MarketplaceService {
@@ -184,5 +189,6 @@ class MarketplaceService {
 
   /// TODO: Implement purchase flow integration.
   Future<void> purchase(String addonId) async {}
+main
 main
 }

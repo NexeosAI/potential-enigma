@@ -1,6 +1,9 @@
 /// Placeholder adapter for cloud drive integrations.
 class DriveAdapter {
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
   final Map<String, DriveConnectionState> _connections = {};
 
   Future<DriveConnectionState> connect(String provider) async {
@@ -21,8 +24,11 @@ class DriveConnectionState {
 
   final String provider;
   final bool isConnected;
+codex/create-working-plan-from-agents.md-0qnebh
+
 
   /// TODO: Connect Google Drive, iCloud, and Dropbox APIs.
   Future<void> connect(String provider) async {}
+main
 main
 }

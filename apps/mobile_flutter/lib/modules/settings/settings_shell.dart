@@ -1,4 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -9,11 +12,14 @@ import '../sync/drive_adapter.dart';
 import '../sync/institution_adapter.dart';
 import '../sync/p2p_sync.dart';
 
+ codex/create-working-plan-from-agents.md-0qnebh
+
 import 'package:flutter/material.dart';
 
 import '../../branding/branding_config.dart';
 main
 
+main
 class SettingsShell extends StatefulWidget {
   const SettingsShell({super.key, required this.brand});
 
@@ -61,11 +67,15 @@ class _SettingsShellState extends State<SettingsShell>
         controller: _controller,
         children: [
           const _ModelsTab(),
+codex/create-working-plan-from-agents.md-0qnebh
+          MarketplaceTab(brand: widget.brand),
+
  codex/create-working-plan-from-agents.md-gyf1jn
           MarketplaceTab(brand: widget.brand),
 
           const _AddOnsTab(),
  main
+main
           const _SyncTab(),
           _AccountTab(config: config),
         ],
@@ -131,7 +141,10 @@ class _ModelsTabState extends State<_ModelsTab> {
             ],
           ),
           const SizedBox(height: 24),
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+ main
           Expanded(
             child: ListView(children: tiles),
           ),
@@ -274,6 +287,8 @@ class _SyncTabState extends State<_SyncTab> {
           onPressed: _provisionInstitution,
           icon: const Icon(Icons.school),
           label: const Text('Request provisioning'),
+codex/create-working-plan-from-agents.md-0qnebh
+
 
           Expanded(child: ListView(children: tiles)),
         ],
@@ -326,6 +341,7 @@ class _SyncTab extends StatelessWidget {
           leading: Icon(Icons.cloud_outlined),
           title: Text('Cloud drives'),
           subtitle: Text('Connect Google Drive, iCloud, or Dropbox.'),
+main
 main
         ),
       ],

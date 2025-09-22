@@ -1,4 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'dart:math';
 
 /// Represents a stored embedding chunk.
@@ -100,6 +103,8 @@ class VectorStore {
     }
 
     return dot / (sqrt(magnitudeA) * sqrt(magnitudeB));
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 /// Provides a simple interface for persisting and querying embeddings.
 class VectorStore {
@@ -110,5 +115,6 @@ class VectorStore {
   Future<List<String>> query(List<double> vector) async {
     return const [];
  main
+main
   }
 }

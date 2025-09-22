@@ -1,4 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'embed_pipeline.dart';
 import 'vector_store.dart';
 import 'citation_service.dart';
@@ -55,6 +58,8 @@ class RetrievedChunk {
   final double score;
   final String citation;
 }
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 /// Orchestrates retrieval of relevant documents prior to generation.
 class Retriever {
@@ -64,3 +69,4 @@ class Retriever {
   }
 }
  main
+main

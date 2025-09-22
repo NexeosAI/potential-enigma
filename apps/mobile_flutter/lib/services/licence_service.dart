@@ -1,4 +1,7 @@
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import 'package:collection/collection.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -214,6 +217,8 @@ class LicenceValidationResult {
   bool get isGracePeriod =>
       status == 'active' && graceExpiresAt != null && graceExpiresAt!.isAfter(DateTime.now());
   bool get isExpired => status == 'grace_expired';
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 /// Client for interacting with the licensing backend.
 class LicenceService {
@@ -242,5 +247,6 @@ class LicenceService {
     // TODO: Call backend validation endpoint.
     return code.isNotEmpty && deviceId.isNotEmpty;
   }
+main
 main
 }

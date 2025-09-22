@@ -1,7 +1,10 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 import Stripe from 'stripe';
 import paypal from '@paypal/checkout-server-sdk';
 import { createClient } from '@supabase/supabase-js';
@@ -91,6 +94,8 @@ async function fetchTier(brandId) {
 app.post('/create-checkout-session', async (req, res) => {
   const { brandId, email, provider = 'stripe', successUrl, cancelUrl } = req.body ?? {};
 
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 
 const app = express();
@@ -103,11 +108,15 @@ const stripeSecret = process.env.STRIPE_SECRET_KEY ?? 'sk_test_placeholder';
 app.post('/create-checkout-session', async (req, res) => {
   const { brandId, email } = req.body ?? {};
 main
+main
   if (!brandId || !email) {
     return res.status(400).json({ error: 'brandId and email are required' });
   }
 
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
   try {
     const tier = await fetchTier(brandId);
     const amountCents = Math.round(Number(tier.price) * 100);
@@ -232,6 +241,8 @@ app.post(
 
 app.get('/healthz', (_, res) => {
   res.json({ status: 'ok', deviceLimit });
+codex/create-working-plan-from-agents.md-0qnebh
+
 
   // TODO: Create a Stripe Checkout session here.
   return res.json({
@@ -249,6 +260,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
 
 app.get('/healthz', (_, res) => {
   res.json({ status: 'ok' });
+main
 main
 });
 

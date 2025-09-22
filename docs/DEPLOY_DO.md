@@ -1,6 +1,9 @@
 # Deploying the McCaigs Education AI Suite to DigitalOcean
 
+codex/create-working-plan-from-agents.md-0qnebh
+
 codex/create-working-plan-from-agents.md-gyf1jn
+main
 This playbook turns the repository into a working beta on DigitalOcean using App Platform, Managed PostgreSQL, and Cloudflare DNS.
 
 ## 1. Provision core infrastructure
@@ -98,6 +101,8 @@ Required values:
 - Forward App Platform logs to Logtail or another managed log sink.
 - Schedule automated backups for the Managed PostgreSQL cluster.
 - Review Stripe and PayPal dashboards after each deploy to confirm webhook success and captured payments.
+codex/create-working-plan-from-agents.md-0qnebh
+
 
 This guide outlines the initial deployment approach for the multi-brand suite
 using DigitalOcean App Platform, Managed PostgreSQL, and Cloudflare DNS.
@@ -144,4 +149,5 @@ using DigitalOcean App Platform, Managed PostgreSQL, and Cloudflare DNS.
 - Enable DigitalOcean Insights for resource monitoring.
 - Forward logs to Logtail or your preferred sink.
 - Schedule backups for the PostgreSQL cluster.
+main
 main

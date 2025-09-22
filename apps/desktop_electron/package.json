@@ -1,0 +1,16 @@
+{
+  "name": "mc-caigs-desktop",
+  "version": "0.1.0",
+  "description": "Electron shell for the McCaigs Education AI Suite.",
+  "private": true,
+  "type": "module",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "NODE_ENV=development electron .",
+    "lint": "echo 'No lint configured'"
+  },
+  "devDependencies": {
+    "electron": "^29.0.0"
+  }
+}

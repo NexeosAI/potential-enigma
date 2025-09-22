@@ -11,12 +11,18 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+codex/create-working-plan-from-agents.md-0qnebh
+  supabase_flutter: ^2.5.4
+  collection: ^1.18.0
+
+
 codex/create-working-plan-from-agents.md-gyf1jn
   supabase_flutter: ^2.5.4
   collection: ^1.18.0
 
 main
 
+main
 dev_dependencies:
   flutter_test:
     sdk: flutter

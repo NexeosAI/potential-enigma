@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>McCaigs Education AI Suite</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="root" class="app-shell">
+      <aside class="sidebar">
+        <div class="brand-header">
+          <h1 id="brand-name"></h1>
+          <p id="brand-tagline"></p>
+        </div>
+        <nav class="nav">
+          <button data-module="workspace" class="nav-item active">Workspace</button>
+          <button data-module="models" class="nav-item">Models</button>
+          <button data-module="rag" class="nav-item">Knowledge</button>
+          <button data-module="sync" class="nav-item">Sync</button>
+          <button data-module="marketplace" class="nav-item">Marketplace</button>
+          <button data-module="settings" class="nav-item">Settings</button>
+        </nav>
+        <section class="footer">
+          <p class="footer-copy">Studently-first, privacy friendly.</p>
+          <p class="footer-copy small" id="brand-spelling"></p>
+        </section>
+      </aside>
+      <main class="content">
+        <header class="content-header">
+          <h2 id="module-title">Workspace Overview</h2>
+          <p id="module-description">
+            Organise courses, notes, and study materials with drag-and-drop folders.
+          </p>
+        </header>
+        <section id="module-content" class="module-content"></section>
+      </main>
+    </div>
+    <script type="module" src="renderer.js"></script>
+  </body>
+</html>
