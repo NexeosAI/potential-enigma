@@ -6,15 +6,16 @@ enum AppBrand {
   studentsAiUs,
 }
 
+enum SpellingVariant { british, american }
+
 extension AppBrandExtension on AppBrand {
   static AppBrand fromKey(String key) {
     switch (key.toLowerCase()) {
-      case 'studentlyai':
-        return AppBrand.studentlyAi;
       case 'studentsai_uk':
         return AppBrand.studentsAiUk;
       case 'studentsai_us':
         return AppBrand.studentsAiUs;
+      case 'studentlyai':
       default:
         return AppBrand.studentlyAi;
     }
@@ -29,10 +30,12 @@ extension AppBrandExtension on AppBrand {
           tagline: 'Your local-first study companion.',
           currency: '£',
           tierPrices: [29, 49, 99, 149],
-          primaryColor: Color(0xFFF97316),
+          primaryColor: Color(0xFFF97316), // Orange500
           accentColor: Colors.white,
           brightness: Brightness.light,
+          spelling: SpellingVariant.british,
         );
+
       case AppBrand.studentsAiUk:
         return const BrandConfig(
           key: 'studentsai_uk',
@@ -43,17 +46,20 @@ extension AppBrandExtension on AppBrand {
           primaryColor: Color(0xFF1E3A8A),
           accentColor: Color(0xFF0EA5E9),
           brightness: Brightness.dark,
+          spelling: SpellingVariant.british,
         );
+
       case AppBrand.studentsAiUs:
         return const BrandConfig(
           key: 'studentsai_us',
           displayName: 'StudentsAI US',
           tagline: 'Study smarter with trusted AI.',
-          currency: '$',
+          currency: '\$', // escaped for Dart
           tierPrices: [29, 49, 99, 149],
           primaryColor: Color(0xFF0369A1),
           accentColor: Color(0xFF38BDF8),
           brightness: Brightness.light,
+          spelling: SpellingVariant.american,
         );
     }
   }
@@ -69,6 +75,7 @@ class BrandConfig {
     required this.primaryColor,
     required this.accentColor,
     required this.brightness,
+    required this.spelling,
   });
 
   final String key;
@@ -79,6 +86,7 @@ class BrandConfig {
   final Color primaryColor;
   final Color accentColor;
   final Brightness brightness;
+  final SpellingVariant spelling;
 
   ThemeData themeData() {
     final baseColorScheme = ColorScheme.fromSeed(
@@ -99,6 +107,16 @@ class BrandConfig {
         secondaryColor: accentColor,
         brightness: brightness,
       ),
+      listTileTheme: ListTileThemeData(
+        iconColor: primaryColor,
+      ),
     );
+  }
+
+  String adaptSpelling(String phrase) {
+    if (spelling == SpellingVariant.american) {
+      return phrase.replaceAll('licence', 'license');
+    }
+    return phrase;
   }
 }

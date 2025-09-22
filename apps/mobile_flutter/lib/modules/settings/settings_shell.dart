@@ -47,30 +47,62 @@ class _SettingsShellState extends State<SettingsShell>
       ),
       body: TabBarView(
         controller: _controller,
-        children: const [
-          _ModelsTab(),
-          _AddOnsTab(),
-          _SyncTab(),
-          _AccountTab(),
+        children: [
+          const _ModelsTab(),
+          const _AddOnsTab(),
+          const _SyncTab(),
+          _AccountTab(config: config),
         ],
       ),
     );
   }
 }
 
-class _ModelsTab extends StatelessWidget {
+class _ModelsTab extends StatefulWidget {
   const _ModelsTab();
 
   @override
+  State<_ModelsTab> createState() => _ModelsTabState();
+}
+
+class _ModelsTabState extends State<_ModelsTab> {
+  int _selectedToggle = 0;
+
+  @override
   Widget build(BuildContext context) {
+    final tiles = _selectedToggle == 0
+        ? const [
+            ListTile(
+              title: Text('Qwen3 0.6B'),
+              subtitle: Text('Installed'),
+              trailing: Icon(Icons.check_circle, color: Colors.green),
+            ),
+            ListTile(
+              title: Text('Gemma3 1B'),
+              subtitle: Text('Not installed'),
+              trailing: Icon(Icons.download),
+            ),
+          ]
+        : const [
+            ListTile(
+              title: Text('OpenRouter'),
+              subtitle: Text('Connect your API key to access hosted models.'),
+              trailing: Icon(Icons.lock_open),
+            ),
+          ];
+
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ToggleButtons(
-            isSelected: const [true, false],
-            onPressed: (_) {},
+            isSelected: List.generate(2, (index) => index == _selectedToggle),
+            onPressed: (index) {
+              setState(() {
+                _selectedToggle = index;
+              });
+            },
             children: const [
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 12),
@@ -83,22 +115,7 @@ class _ModelsTab extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 24),
-          Expanded(
-            child: ListView(
-              children: const [
-                ListTile(
-                  title: Text('Qwen3 0.6B'),
-                  subtitle: Text('Installed'),
-                  trailing: Icon(Icons.check_circle, color: Colors.green),
-                ),
-                ListTile(
-                  title: Text('Gemma3 1B'),
-                  subtitle: Text('Not installed'),
-                  trailing: Icon(Icons.download),
-                ),
-              ],
-            ),
-          ),
+          Expanded(child: ListView(children: tiles)),
         ],
       ),
     );
@@ -156,22 +173,25 @@ class _SyncTab extends StatelessWidget {
 }
 
 class _AccountTab extends StatelessWidget {
-  const _AccountTab();
+  const _AccountTab({required this.config});
+
+  final BrandConfig config;
 
   @override
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: const [
+      children: [
         ListTile(
-          leading: Icon(Icons.verified_user),
-          title: Text('Licence tier'),
-          subtitle: Text('Tier 1 · 2/3 devices activated'),
+          leading: const Icon(Icons.verified_user),
+          title: Text(config.adaptSpelling('Licence tier')),
+          subtitle: Text('${config.currency}29 · 2/3 devices active'),
         ),
         ListTile(
-          leading: Icon(Icons.devices_other),
-          title: Text('Manage devices'),
-          subtitle: Text('Deactivate a device to free up a seat.'),
+          leading: const Icon(Icons.devices_other),
+          title: Text(config.adaptSpelling('Manage licences')),
+          subtitle: Text(config
+              .adaptSpelling('Deactivate a device to free up a licence seat.')),
         ),
       ],
     );
