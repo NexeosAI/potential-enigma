@@ -1,40 +1,59 @@
 # Codex – Next Step Instructions
 
 ## Context
-This repository (`NexeosAI/potential-enigma`) is being refactored to adopt **MAID** as the base framework, while layering custom McCaigs modules (licensing, RAG, marketplace, sync, branding).  
-The migration is broken into **nine phases** in `codex_migration_plan.md`.
-
-You must only focus on the **current phase** noted below.
+This repository (`NexeosAI/potential-enigma`) is being refactored to adopt **MAID** (https://github.com/Mobile-Artificial-Intelligence/maid) as the base framework.  
+We are layering custom McCaigs modules on top: **licensing, RAG, marketplace, sync, branding, marketplace**.  
+The full migration plan is in `codex_migration_plan.md`.
 
 ---
 
 ## Current Phase
-**PHASE: [WRITE CURRENT PHASE HERE]**
+**Phase 1 – Vendor MAID**  
+and  
+**Phase 2 – Extract MAID Core**
 
-Example:  
-- Phase 1 – Vendor MAID  
-- Phase 2 – Extract MAID Core  
-- Phase 3 – Brand Theming  
-- etc. (see `codex_migration_plan.md`)
+You must complete both phases in this PR.
 
 ---
 
-## Deliverables for this Phase
-- [List out tasks for this phase, copied from `codex_migration_plan.md`]
-- Ensure code compiles and tests pass.
-- Do not touch future phases yet.
+## Tasks
+
+### Phase 1 – Vendor MAID
+1. Add MAID as a git submodule inside `/vendor/maid`.  
+   Example:  
+   ```bash
+   git submodule add https://github.com/Mobile-Artificial-Intelligence/maid vendor/maid
+   ```
+2. Ensure `llama_sdk` and required dependencies from MAID are referenced in `apps/mobile_flutter/pubspec.yaml`.
+3. Verify `flutter pub get` succeeds.
+
+### Phase 2 – Extract MAID Core
+
+1. Create `/apps/mobile_flutter/lib/maid_core/`.
+2. Copy MAID’s **chat**, **model manager**, and **theme** code into `maid_core`.
+3. Update `main.dart` so the Flutter app boots using `maid_core` chat UI.
+4. Do not overwrite existing McCaigs modules (`branding`, `licensing`, `rag`, etc.), only integrate with them.
+5. Ensure app builds and runs using MAID core as foundation.
 
 ---
 
 ## Rules
-- Work incrementally → each PR only covers its phase.
-- Preserve existing project layout unless specified in plan.
-- Do not remove or overwrite custom McCaigs modules (`branding`, `licensing`, `workspace`, `rag`, etc.).
-- If a TODO is required for later phases, mark it clearly.
-- Push changes as a single PR targeting `main`.
+
+* **Do not include merge conflict markers** (`<<<<<<<`, `=======`, `>>>>>>>`) in any file.
+* If you must choose between two versions of code, always prefer the **functional / Codex branch version**, not placeholder stubs.
+* Keep code compiling — fix imports and resolve missing references cleanly.
+* If MAID code overlaps with existing files, merge logic properly (preserve our branding, licensing, spelling variants).
+* Leave TODOs for future phases if something is incomplete.
+* Output changes as a single PR against `main`.
 
 ---
 
-## Example Usage
-When ready for the next step, update this file:
+## Deliverable
 
+A PR that:
+
+* Vendors MAID into `/vendor/maid`.
+* Extracts MAID core into `/apps/mobile_flutter/lib/maid_core/`.
+* Boots app with MAID chat interface.
+* Preserves branding + theming logic (`AppBrand`, `BrandConfig`).
+* Builds without errors.
