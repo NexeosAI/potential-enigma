@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 enum AppBrand {
-  studentlyAi,
-  studentsAiUk,
-  studentsAiUs,
+  studentlyai,
+  studentsaiUk,
+  studentsaiUs,
 }
 
 enum SpellingVariant { british, american }
@@ -12,18 +12,18 @@ extension AppBrandExtension on AppBrand {
   static AppBrand fromKey(String key) {
     switch (key.toLowerCase()) {
       case 'studentsai_uk':
-        return AppBrand.studentsAiUk;
+        return AppBrand.studentsaiUk;
       case 'studentsai_us':
-        return AppBrand.studentsAiUs;
+        return AppBrand.studentsaiUs;
       case 'studentlyai':
       default:
-        return AppBrand.studentlyAi;
+        return AppBrand.studentlyai;
     }
   }
 
   BrandConfig get config {
     switch (this) {
-      case AppBrand.studentlyAi:
+      case AppBrand.studentlyai:
         return const BrandConfig(
           key: 'studentlyai',
           displayName: 'StudentlyAI',
@@ -36,7 +36,7 @@ extension AppBrandExtension on AppBrand {
           spelling: SpellingVariant.british,
         );
 
-      case AppBrand.studentsAiUk:
+      case AppBrand.studentsaiUk:
         return const BrandConfig(
           key: 'studentsai_uk',
           displayName: 'StudentsAI UK',
@@ -49,7 +49,7 @@ extension AppBrandExtension on AppBrand {
           spelling: SpellingVariant.british,
         );
 
-      case AppBrand.studentsAiUs:
+      case AppBrand.studentsaiUs:
         return const BrandConfig(
           key: 'studentsai_us',
           displayName: 'StudentsAI US',

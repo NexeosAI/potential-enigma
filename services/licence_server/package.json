@@ -9,6 +9,11 @@
     "dev": "nodemon server.js"
   },
   "dependencies": {
+codex/create-working-plan-from-agents.md-gyf1jn
+    "@paypal/checkout-server-sdk": "^1.0.4",
+    "@supabase/supabase-js": "^2.43.4",
+
+main
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",

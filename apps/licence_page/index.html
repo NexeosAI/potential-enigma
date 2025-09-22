@@ -6,18 +6,38 @@
     <title>McCaigs Education AI Suite – Licensing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://js.stripe.com/v3/"></script>
-    <script defer src="https://www.paypal.com/sdk/js?client-id=PAYPAL_PLACEHOLDER"></script>
   </head>
-  <body class="bg-slate-950 text-slate-100 min-h-screen">
+  <body
+    class="bg-slate-950 text-slate-100 min-h-screen"
+    data-supabase-url="SUPABASE_URL_PLACEHOLDER"
+    data-supabase-anon-key="SUPABASE_ANON_KEY_PLACEHOLDER"
+    data-licence-server-url="LICENCE_SERVER_URL_PLACEHOLDER"
+    data-stripe-publishable-key="STRIPE_PUBLISHABLE_KEY_PLACEHOLDER"
+    data-paypal-client-id="PAYPAL_CLIENT_ID_PLACEHOLDER"
+  >
     <main class="max-w-4xl mx-auto px-4 py-16" id="app">
       <header class="text-center space-y-4">
-        <h1 class="text-4xl font-semibold" id="brandName">McCaigs Education AI Suite</h1>
-        <p class="text-slate-300" id="brandTagline">Local-first AI tools for students and educators.</p>
+        <h1 class="text-4xl font-semibold" id="brandName">
+          McCaigs Education AI Suite
+        </h1>
+        <p class="text-slate-300" id="brandTagline">
+          Local-first AI tools for students and educators.
+        </p>
       </header>
 
       <section class="mt-12 grid md:grid-cols-2 gap-8">
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
-          <h2 class="text-2xl font-semibold">Current Tier</h2>
+          <h2 class="text-2xl font-semibold">Secure your lifetime licence</h2>
+          <label class="block text-sm text-slate-300" for="emailInput"
+            >Email address for receipt + licence delivery</label
+          >
+          <input
+            id="emailInput"
+            type="email"
+            required
+            placeholder="you@example.com"
+            class="w-full px-3 py-2 rounded-md bg-slate-950 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
           <p id="tierPrice" class="text-lg">Loading pricing...</p>
           <div class="space-y-2">
             <div class="flex justify-between text-sm text-slate-400">
@@ -32,6 +52,7 @@
               ></div>
             </div>
           </div>
+          <p class="text-sm text-slate-400" id="tierNote"></p>
           <button
             id="stripeButton"
             class="w-full py-3 rounded-lg bg-amber-500 text-slate-950 font-semibold hover:bg-amber-400 transition"
@@ -39,6 +60,7 @@
             Purchase with Stripe
           </button>
           <div id="paypalContainer"></div>
+          <p class="text-sm text-amber-400" id="message"></p>
         </div>
 
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
@@ -54,73 +76,280 @@
     </main>
 
     <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+
       const BRAND_CONFIG = {
         studentlyai: {
-          name: 'StudentlyAI',
-          tagline: 'Your local-first study companion.',
-          primary: 'rgb(249 115 22)',
-          currency: '£'
+          name: "StudentlyAI",
+          tagline: "Your local-first study companion.",
+          primary: "rgb(249 115 22)",
+          currency: "£",
         },
         studentsai_uk: {
-          name: 'StudentsAI UK',
-          tagline: 'Academic excellence for UK learners.',
-          primary: 'rgb(30 58 138)',
-          currency: '£'
+          name: "StudentsAI UK",
+          tagline: "Academic excellence for UK learners.",
+          primary: "rgb(30 58 138)",
+          currency: "£",
         },
         studentsai_us: {
-          name: 'StudentsAI US',
-          tagline: 'Study smarter with trusted AI.',
-          primary: 'rgb(3 105 161)',
-          currency: '$'
-        }
+          name: "StudentsAI US",
+          tagline: "Study smarter with trusted AI.",
+          primary: "rgb(3 105 161)",
+          currency: "$",
+        },
       };
 
       const urlParams = new URLSearchParams(window.location.search);
-      const brandKey = urlParams.get('brand') ?? 'studentlyai';
+      const brandKey = urlParams.get("brand") ?? "studentlyai";
       const brand = BRAND_CONFIG[brandKey] ?? BRAND_CONFIG.studentlyai;
 
-      const brandNameEl = document.getElementById('brandName');
-      const brandTaglineEl = document.getElementById('brandTagline');
-      const tierPriceEl = document.getElementById('tierPrice');
-      const tierProgressLabel = document.getElementById('tierProgressLabel');
-      const tierProgressBar = document.getElementById('tierProgressBar');
+      const dataset = document.body.dataset;
+      const config = {
+        supabaseUrl: dataset.supabaseUrl,
+        supabaseAnonKey: dataset.supabaseAnonKey,
+        licenceServerUrl: dataset.licenceServerUrl,
+        stripePublishableKey: dataset.stripePublishableKey,
+        paypalClientId: dataset.paypalClientId,
+      };
 
-      document.body.style.setProperty('--brand-primary', brand.primary);
+      const messageEl = document.getElementById("message");
+      const emailInput = document.getElementById("emailInput");
+      const tierPriceEl = document.getElementById("tierPrice");
+      const tierProgressLabel = document.getElementById("tierProgressLabel");
+      const tierProgressBar = document.getElementById("tierProgressBar");
+      const tierNoteEl = document.getElementById("tierNote");
+
+      const brandNameEl = document.getElementById("brandName");
+      const brandTaglineEl = document.getElementById("brandTagline");
       brandNameEl.textContent = brand.name;
       brandTaglineEl.textContent = brand.tagline;
+      tierProgressBar.style.backgroundColor = brand.primary;
 
-      async function fetchTier() {
-        // TODO: Replace with Supabase `get_current_tier` call.
-        return {
-          price: 29,
-          cap: 10000,
-          sold: 2000
-        };
+      const supabaseUrl =
+        config.supabaseUrl && config.supabaseUrl !== "SUPABASE_URL_PLACEHOLDER"
+          ? config.supabaseUrl
+          : null;
+      const supabaseAnonKey =
+        config.supabaseAnonKey &&
+        config.supabaseAnonKey !== "SUPABASE_ANON_KEY_PLACEHOLDER"
+          ? config.supabaseAnonKey
+          : null;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        messageEl.textContent =
+          "Supabase credentials missing. Update data attributes before deploying.";
       }
 
-      fetchTier().then((tier) => {
-        tierPriceEl.textContent = `${brand.currency}${tier.price} lifetime`;
-        tierProgressLabel.textContent = `${tier.sold.toLocaleString()} / ${tier.cap?.toLocaleString() ?? '∞'}`;
-        const progress = Math.min(100, (tier.sold / tier.cap) * 100);
-        tierProgressBar.style.width = `${Number.isFinite(progress) ? progress : 0}%`;
-        tierProgressBar.style.backgroundColor = brand.primary;
+      const supabase =
+        supabaseUrl && supabaseAnonKey
+          ? createClient(supabaseUrl, supabaseAnonKey)
+          : null;
+
+      async function fetchTier() {
+        if (!supabase) return null;
+        const { data, error } = await supabase.rpc("get_current_tier", {
+          p_brand_id: brandKey,
+        });
+        if (error) {
+          console.error("Failed to load tier", error);
+          messageEl.textContent =
+            "Unable to load tier data. Please refresh or try again later.";
+          return null;
+        }
+        const tier = Array.isArray(data) ? data[0] : data;
+        return tier;
+      }
+
+      let currencyCache = null;
+      async function fetchBrandCurrency() {
+        if (currencyCache) return currencyCache;
+        if (!supabase) {
+          currencyCache = brandKey.includes("us") ? "USD" : "GBP";
+          return currencyCache;
+        }
+        const { data, error } = await supabase
+          .from("brands")
+          .select("default_currency")
+          .eq("id", brandKey)
+          .maybeSingle();
+        if (error) {
+          console.warn("Currency lookup failed", error);
+          currencyCache = brandKey.includes("us") ? "USD" : "GBP";
+          return currencyCache;
+        }
+        currencyCache =
+          data?.default_currency ??
+          (brandKey.includes("us") ? "USD" : "GBP");
+        return currencyCache;
+      }
+
+      function formatCurrency(currency, amount) {
+        const formatter = new Intl.NumberFormat(undefined, {
+          style: "currency",
+          currency,
+          minimumFractionDigits: 2,
+        });
+        return formatter.format(amount);
+      }
+
+      fetchTier().then(async (tier) => {
+        if (!tier) return;
+
+        const currency = await fetchBrandCurrency();
+        tierPriceEl.textContent = `${formatCurrency(currency, tier.price)} lifetime`;
+        const capLabel = tier.cap ? tier.cap.toLocaleString() : "∞";
+        tierProgressLabel.textContent = `${tier.sold.toLocaleString()} / ${capLabel}`;
+        const progress = tier.cap
+          ? Math.min(100, (tier.sold / tier.cap) * 100)
+          : 0;
+        tierProgressBar.style.width = `${
+          Number.isFinite(progress) ? progress : 0
+        }%`;
+        tierNoteEl.textContent = tier.cap
+          ? `${capLabel} licences available before price increases to the next tier.`
+          : "Final tier – price will not increase further.";
       });
 
-      document.getElementById('stripeButton').addEventListener('click', async () => {
-        // TODO: call backend checkout endpoint and redirect.
-        alert('Stripe checkout integration coming soon.');
-      });
+      function requireEmail() {
+        if (!emailInput.value) {
+          messageEl.textContent = "Enter your email address to continue.";
+          emailInput.focus();
+          return false;
+        }
+        messageEl.textContent = "";
+        return true;
+      }
 
-      if (window.paypal) {
-        window.paypal.Buttons({
-          createOrder: () => {
-            // TODO: Replace with backend call generating PayPal order.
-            return Promise.resolve('ORDER-MOCK');
-          },
-          onApprove: () => {
-            alert('PayPal purchase flow coming soon.');
+      const stripeKey =
+        config.stripePublishableKey &&
+        config.stripePublishableKey !== "STRIPE_PUBLISHABLE_KEY_PLACEHOLDER"
+          ? config.stripePublishableKey
+          : null;
+      const stripePromise =
+        stripeKey && window.Stripe
+          ? Promise.resolve(window.Stripe(stripeKey))
+          : null;
+
+      document
+        .getElementById("stripeButton")
+        .addEventListener("click", async () => {
+          if (!requireEmail()) return;
+          if (
+            !config.licenceServerUrl ||
+            config.licenceServerUrl === "LICENCE_SERVER_URL_PLACEHOLDER"
+          ) {
+            messageEl.textContent =
+              "Checkout server URL missing. Update deployment configuration.";
+            return;
           }
-        }).render('#paypalContainer');
+          try {
+            const response = await fetch(
+              `${config.licenceServerUrl}/create-checkout-session`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  brandId: brandKey,
+                  email: emailInput.value,
+                  provider: "stripe",
+                  successUrl: `${window.location.origin}/success?brand=${brandKey}`,
+                  cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
+                }),
+              }
+            );
+
+            const payload = await response.json();
+            if (!response.ok) {
+              messageEl.textContent =
+                payload.error ?? "Unable to start Stripe checkout.";
+              return;
+            }
+
+            if (stripePromise && payload.sessionId) {
+              const stripe = await stripePromise;
+              await stripe.redirectToCheckout({
+                sessionId: payload.sessionId,
+              });
+            } else if (payload.checkoutUrl) {
+              window.location.href = payload.checkoutUrl;
+            }
+          } catch (error) {
+            console.error("Stripe checkout failed", error);
+            messageEl.textContent = "Stripe checkout failed. Please try again.";
+          }
+        });
+
+      const paypalClientId =
+        config.paypalClientId &&
+        config.paypalClientId !== "PAYPAL_CLIENT_ID_PLACEHOLDER"
+          ? config.paypalClientId
+          : null;
+
+      if (paypalClientId) {
+        fetchBrandCurrency().then((currency) => {
+          const paypalScript = document.createElement("script");
+          paypalScript.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=${currency}`;
+          paypalScript.onload = renderPaypalButton;
+          document.head.appendChild(paypalScript);
+        });
+      }
+
+      async function renderPaypalButton() {
+        if (!window.paypal) return;
+        const currency = await fetchBrandCurrency();
+        window.paypal
+          .Buttons({
+            createOrder: async () => {
+              if (!requireEmail()) throw new Error("Email required");
+              if (
+                !config.licenceServerUrl ||
+                config.licenceServerUrl === "LICENCE_SERVER_URL_PLACEHOLDER"
+              ) {
+                messageEl.textContent =
+                  "Checkout server URL missing. Update deployment configuration.";
+                throw new Error("Checkout server URL missing");
+              }
+              const response = await fetch(
+                `${config.licenceServerUrl}/create-checkout-session`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    brandId: brandKey,
+                    email: emailInput.value,
+                    provider: "paypal",
+                    successUrl: `${window.location.origin}/success?brand=${brandKey}`,
+                    cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
+                  }),
+                }
+              );
+              const payload = await response.json();
+              if (!response.ok) {
+                messageEl.textContent =
+                  payload.error ?? "Unable to start PayPal checkout.";
+                throw new Error(payload.error ?? "PayPal checkout failed");
+              }
+              return payload.orderId;
+            },
+            onApprove: async (data, actions) => {
+              messageEl.textContent = "Processing PayPal payment…";
+              try {
+                await actions.order?.capture();
+                messageEl.textContent =
+                  "Payment received! Check your email for the licence code.";
+              } catch (error) {
+                console.error("PayPal capture failed", error);
+                messageEl.textContent =
+                  "PayPal capture failed. Please contact support.";
+              }
+            },
+            onError: (error) => {
+              console.error("PayPal error", error);
+              messageEl.textContent =
+                "PayPal checkout failed. Please try again.";
+            },
+          })
+          .render("#paypalContainer");
       }
     </script>
   </body>

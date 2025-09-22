@@ -4,6 +4,11 @@ CREATE TABLE IF NOT EXISTS addons (
     brand_scope TEXT[] DEFAULT ARRAY[]::TEXT[],
     display_name TEXT NOT NULL,
     description TEXT NOT NULL,
+codex/create-working-plan-from-agents.md-gyf1jn
+    price_cents INTEGER NOT NULL DEFAULT 0,
+    currency TEXT NOT NULL DEFAULT 'GBP',
+
+main
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -33,6 +38,27 @@ CREATE TABLE IF NOT EXISTS addon_installs (
 );
 
 CREATE OR REPLACE FUNCTION get_available_addons(p_brand_id TEXT)
+codex/create-working-plan-from-agents.md-gyf1jn
+RETURNS TABLE (
+    id TEXT,
+    display_name TEXT,
+    description TEXT,
+    price_cents INTEGER,
+    currency TEXT
+) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT a.id,
+           a.display_name,
+           a.description,
+           a.price_cents,
+           a.currency
+      FROM addons a
+     WHERE a.brand_scope IS NULL
+        OR array_length(a.brand_scope, 1) = 0
+        OR p_brand_id = ANY(a.brand_scope)
+     ORDER BY a.display_name;
+
 RETURNS SETOF addons AS $$
 BEGIN
     RETURN QUERY
@@ -41,6 +67,7 @@ BEGIN
      WHERE brand_scope IS NULL
         OR array_length(brand_scope, 1) = 0
         OR p_brand_id = ANY(brand_scope);
+main
 END;
 $$ LANGUAGE plpgsql;
 
@@ -65,6 +92,51 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+codex/create-working-plan-from-agents.md-gyf1jn
+CREATE OR REPLACE FUNCTION record_addon_purchase(
+    p_addon_id TEXT,
+    p_brand_id TEXT,
+    p_email TEXT,
+    p_price_cents INTEGER
+)
+RETURNS TABLE (
+    purchase_id UUID,
+    addon_id TEXT,
+    price_paid INTEGER,
+    purchased_at TIMESTAMP WITH TIME ZONE
+) AS $$
+DECLARE
+    target_addon addons%ROWTYPE;
+BEGIN
+    SELECT * INTO target_addon FROM addons WHERE id = p_addon_id;
+
+    IF target_addon IS NULL THEN
+        RAISE EXCEPTION 'Addon % not found', p_addon_id USING ERRCODE = 'P0002';
+    END IF;
+
+    IF target_addon.brand_scope IS NOT NULL
+       AND array_length(target_addon.brand_scope, 1) > 0
+       AND NOT (p_brand_id = ANY(target_addon.brand_scope)) THEN
+        RAISE EXCEPTION 'Addon % is not available for brand %', p_addon_id, p_brand_id USING ERRCODE = 'P0001';
+    END IF;
+
+    INSERT INTO addon_purchases (addon_id, brand_id, purchaser_email, price_paid)
+    VALUES (p_addon_id, p_brand_id, p_email, COALESCE(p_price_cents, target_addon.price_cents))
+    RETURNING id, addon_id, price_paid, created_at
+      INTO purchase_id, addon_id, price_paid, purchased_at;
+
+    RETURN NEXT;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Seed starter add-ons
+INSERT INTO addons (id, brand_scope, display_name, description, price_cents, currency)
+VALUES
+    ('research_pack', ARRAY['studentlyai','studentsai_uk','studentsai_us'], 'Research Pack', 'Deep research, citations, and academic tone assistance.', 1900, 'GBP'),
+    ('study_skills_pack', ARRAY['studentlyai','studentsai_uk'], 'Study Skills Pack', 'Timetable automation, revision prompts, and flashcards.', 1500, 'GBP'),
+    ('career_pack', ARRAY['studentsai_us'], 'Career Pack', 'CV builder, interview prep, and job tracking.', 1500, 'USD'),
+    ('classroom_pack', ARRAY['studentlyai'], 'Classroom Pack', 'Group collaboration tools and peer feedback workflows.', 1200, 'GBP')
+
 -- Seed starter add-ons
 INSERT INTO addons (id, brand_scope, display_name, description)
 VALUES
@@ -72,6 +144,7 @@ VALUES
     ('study_skills_pack', ARRAY['studentlyai','studentsai_uk'], 'Study Skills Pack', 'Timetable automation, revision prompts, and flashcards.'),
     ('career_pack', ARRAY['studentsai_us'], 'Career Pack', 'CV builder, interview prep, and job tracking.'),
     ('classroom_pack', ARRAY['studentlyai'], 'Classroom Pack', 'Group collaboration tools and peer feedback workflows.')
+main
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO addon_versions (addon_id, version, download_url, release_notes)

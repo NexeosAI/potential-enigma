@@ -1,6 +1,18 @@
+codex/create-working-plan-from-agents.md-gyf1jn
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../branding/branding_config.dart';
+import '../marketplace/marketplace_tab.dart';
+import '../sync/drive_adapter.dart';
+import '../sync/institution_adapter.dart';
+import '../sync/p2p_sync.dart';
+
+import 'package:flutter/material.dart';
+
+import '../../branding/branding_config.dart';
+main
 
 class SettingsShell extends StatefulWidget {
   const SettingsShell({super.key, required this.brand});
@@ -49,7 +61,11 @@ class _SettingsShellState extends State<SettingsShell>
         controller: _controller,
         children: [
           const _ModelsTab(),
+ codex/create-working-plan-from-agents.md-gyf1jn
+          MarketplaceTab(brand: widget.brand),
+
           const _AddOnsTab(),
+ main
           const _SyncTab(),
           _AccountTab(config: config),
         ],
@@ -115,6 +131,150 @@ class _ModelsTabState extends State<_ModelsTab> {
             ],
           ),
           const SizedBox(height: 24),
+codex/create-working-plan-from-agents.md-gyf1jn
+          Expanded(
+            child: ListView(children: tiles),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SyncTab extends StatefulWidget {
+  const _SyncTab();
+
+  @override
+  State<_SyncTab> createState() => _SyncTabState();
+}
+
+class _SyncTabState extends State<_SyncTab> {
+  final P2PSync _p2pSync = P2PSync();
+  final DriveAdapter _driveAdapter = DriveAdapter();
+  final InstitutionAdapter _institutionAdapter = InstitutionAdapter();
+  final TextEditingController _institutionController = TextEditingController();
+
+  StreamSubscription<P2PSyncState>? _subscription;
+  String? _pairingCode;
+  String _syncStatus = 'Ready to pair devices';
+  final Set<String> _connectedDrives = <String>{};
+
+  @override
+  void initState() {
+    super.initState();
+    _subscription = _p2pSync.statusStream.listen((state) {
+      setState(() {
+        _syncStatus = state.message;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _p2pSync.dispose();
+    _institutionController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _generateCode() async {
+    final code = await _p2pSync.generatePairingCode();
+    setState(() {
+      _pairingCode = code;
+    });
+  }
+
+  Future<void> _startPairing() async {
+    if (_pairingCode == null) {
+      await _generateCode();
+    }
+    if (_pairingCode != null) {
+      await _p2pSync.startSession(_pairingCode!);
+    }
+  }
+
+  Future<void> _toggleDrive(String provider, bool connect) async {
+    if (connect) {
+      await _driveAdapter.connect(provider);
+      setState(() => _connectedDrives.add(provider));
+    } else {
+      await _driveAdapter.disconnect(provider);
+      setState(() => _connectedDrives.remove(provider));
+    }
+  }
+
+  Future<void> _provisionInstitution() async {
+    if (_institutionController.text.isEmpty) {
+      return;
+    }
+    final result = await _institutionAdapter.configureInstitution(_institutionController.text);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Provisioned ${result.institutionId} (${result.notes}).')),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const driveOptions = <String, String>{
+      'google_drive': 'Google Drive',
+      'icloud': 'Apple iCloud',
+      'dropbox': 'Dropbox',
+    };
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        Text('Peer-to-peer sync', style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Text(_syncStatus),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 12,
+          children: [
+            ElevatedButton.icon(
+              onPressed: _generateCode,
+              icon: const Icon(Icons.qr_code_2),
+              label: Text(_pairingCode == null ? 'Generate QR code' : 'Code: $_pairingCode'),
+            ),
+            OutlinedButton.icon(
+              onPressed: _startPairing,
+              icon: const Icon(Icons.link),
+              label: const Text('Start pairing'),
+            ),
+          ],
+        ),
+        const Divider(height: 32),
+        Text('Cloud drives', style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 12,
+          children: [
+            for (final entry in driveOptions.entries)
+              FilterChip(
+                label: Text(entry.value),
+                selected: _connectedDrives.contains(entry.key),
+                onSelected: (selected) => _toggleDrive(entry.key, selected),
+              ),
+          ],
+        ),
+        const Divider(height: 32),
+        Text('Institutional sync', style: theme.textTheme.titleMedium),
+        const SizedBox(height: 8),
+        TextField(
+          controller: _institutionController,
+          decoration: const InputDecoration(
+            labelText: 'Institution ID',
+            hintText: 'mccaigs-university',
+          ),
+        ),
+        const SizedBox(height: 12),
+        ElevatedButton.icon(
+          onPressed: _provisionInstitution,
+          icon: const Icon(Icons.school),
+          label: const Text('Request provisioning'),
+
           Expanded(child: ListView(children: tiles)),
         ],
       ),
@@ -166,6 +326,7 @@ class _SyncTab extends StatelessWidget {
           leading: Icon(Icons.cloud_outlined),
           title: Text('Cloud drives'),
           subtitle: Text('Connect Google Drive, iCloud, or Dropbox.'),
+main
         ),
       ],
     );
