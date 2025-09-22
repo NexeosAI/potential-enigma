@@ -1,0 +1,11 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# Flutter/Dart
+.dart_tool/
+.packages
+build/
+
+# Misc
+.DS_Store

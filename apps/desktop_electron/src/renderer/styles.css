@@ -1,0 +1,153 @@
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(30, 41, 59, 0.95));
+  color: #f8fafc;
+}
+
+.brand-header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.brand-header p {
+  margin-top: 4px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+  opacity: 0.75;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+  flex: 1;
+}
+
+.nav-item {
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: none;
+  text-align: left;
+  font-size: 0.95rem;
+  color: inherit;
+  background: rgba(15, 23, 42, 0.35);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-item:hover {
+  background: rgba(148, 163, 184, 0.4);
+  transform: translateX(4px);
+}
+
+.nav-item.active {
+  background: rgba(248, 250, 252, 0.95);
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.content {
+  background: #ffffff;
+  padding: 32px;
+  overflow-y: auto;
+}
+
+.content-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.content-header p {
+  margin-top: 8px;
+  margin-bottom: 24px;
+  color: #475569;
+}
+
+.module-content {
+  display: grid;
+  gap: 16px;
+}
+
+.card {
+  padding: 20px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, rgba(15, 23, 42, 0.05), rgba(15, 23, 42, 0.15));
+  border: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.card h3 {
+  margin: 0 0 12px;
+}
+
+.card p {
+  margin: 0;
+  color: #475569;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tag {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(15, 23, 42, 0.07);
+  color: #0f172a;
+}
+
+.footer {
+  margin-top: 24px;
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.footer-copy {
+  margin: 0 0 6px;
+}
+
+.footer-copy.small {
+  font-size: 0.7rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.1);
+}
+
+.section-divider {
+  margin: 24px 0 8px;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #64748b;
+}
