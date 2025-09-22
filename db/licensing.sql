@@ -22,6 +22,7 @@ CREATE TABLE IF NOT EXISTS licences (
     code TEXT UNIQUE NOT NULL,
     purchaser_email TEXT NOT NULL,
     tier_sequence SMALLINT NOT NULL,
+codex/create-working-plan-from-agents.md-gyf1jn
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -35,6 +36,12 @@ CREATE TABLE IF NOT EXISTS licence_devices (
     UNIQUE (licence_id, device_id)
 );
 
+
+    devices JSONB DEFAULT '[]'::jsonb,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+main
 CREATE OR REPLACE FUNCTION get_current_tier(p_brand_id TEXT)
 RETURNS TABLE (
     brand_id TEXT,
@@ -45,6 +52,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
+codex/create-working-plan-from-agents.md-gyf1jn
     WITH tier_counts AS (
         SELECT pt.brand_id,
                pt.sequence,
@@ -67,10 +75,25 @@ BEGIN
       FROM tier_counts tc
      WHERE tc.cap IS NULL OR tc.sold < tc.cap
      ORDER BY tc.sequence
+
+    SELECT pt.brand_id,
+           pt.sequence,
+           pt.price,
+           pt.cap,
+           COUNT(l.*) AS sold
+      FROM pricing_tiers pt
+      LEFT JOIN licences l
+        ON l.brand_id = pt.brand_id
+       AND l.tier_sequence = pt.sequence
+     WHERE pt.brand_id = p_brand_id
+     GROUP BY pt.brand_id, pt.sequence, pt.price, pt.cap
+     ORDER BY pt.sequence
+main
      LIMIT 1;
 END;
 $$ LANGUAGE plpgsql;
 
+codex/create-working-plan-from-agents.md-gyf1jn
 CREATE OR REPLACE FUNCTION create_licence(p_brand_id TEXT, p_email TEXT)
 RETURNS TABLE (
     licence_id UUID,
@@ -231,6 +254,10 @@ COMMENT ON TABLE brands IS 'Supported brands (StudentlyAI, StudentsAI UK, Studen
 COMMENT ON TABLE pricing_tiers IS 'Tiered launch pricing for each brand.';
 COMMENT ON TABLE licences IS 'Issued licences including device activation metadata.';
 COMMENT ON TABLE licence_devices IS 'Tracks per-device activation and validation timestamps.';
+COMMENT ON TABLE brands IS 'Supported brands (StudentlyAI, StudentsAI UK, StudentsAI US, etc.)';
+COMMENT ON TABLE pricing_tiers IS 'Tiered launch pricing for each brand.';
+COMMENT ON TABLE licences IS 'Issued licences including device activation metadata.';
+main
 
 -- Seed brands
 INSERT INTO brands (id, display_name, default_currency, primary_colour, accent_colour)

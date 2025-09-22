@@ -30,11 +30,12 @@ extension AppBrandExtension on AppBrand {
           tagline: 'Your local-first study companion.',
           currency: '£',
           tierPrices: [29, 49, 99, 149],
-          primaryColor: Color(0xFFF97316),
+          primaryColor: Color(0xFFF97316), // Orange500
           accentColor: Colors.white,
           brightness: Brightness.light,
           spelling: SpellingVariant.british,
         );
+
       case AppBrand.studentsaiUk:
         return const BrandConfig(
           key: 'studentsai_uk',
@@ -47,12 +48,13 @@ extension AppBrandExtension on AppBrand {
           brightness: Brightness.dark,
           spelling: SpellingVariant.british,
         );
+
       case AppBrand.studentsaiUs:
         return const BrandConfig(
           key: 'studentsai_us',
           displayName: 'StudentsAI US',
           tagline: 'Study smarter with trusted AI.',
-          currency: r'$',
+          currency: '\$', // escaped for Dart
           tierPrices: [29, 49, 99, 149],
           primaryColor: Color(0xFF0369A1),
           accentColor: Color(0xFF38BDF8),

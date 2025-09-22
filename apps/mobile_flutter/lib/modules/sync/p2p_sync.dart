@@ -1,3 +1,4 @@
+codex/create-working-plan-from-agents.md-gyf1jn
 import 'dart:async';
 
 /// Provides peer-to-peer sync placeholder for QR/WebRTC sharing.
@@ -32,4 +33,10 @@ class P2PSyncState {
 
   final String message;
   final bool isConnected;
+
+/// Provides peer-to-peer sync placeholder for QR/WebRTC sharing.
+class P2PSync {
+  /// TODO: Implement QR pairing flow and secure data channel setup.
+  Future<void> startSession() async {}
+main
 }

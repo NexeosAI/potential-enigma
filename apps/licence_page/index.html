@@ -17,14 +17,20 @@
   >
     <main class="max-w-4xl mx-auto px-4 py-16" id="app">
       <header class="text-center space-y-4">
-        <h1 class="text-4xl font-semibold" id="brandName">McCaigs Education AI Suite</h1>
-        <p class="text-slate-300" id="brandTagline">Local-first AI tools for students and educators.</p>
+        <h1 class="text-4xl font-semibold" id="brandName">
+          McCaigs Education AI Suite
+        </h1>
+        <p class="text-slate-300" id="brandTagline">
+          Local-first AI tools for students and educators.
+        </p>
       </header>
 
       <section class="mt-12 grid md:grid-cols-2 gap-8">
         <div class="bg-slate-900 border border-slate-700 rounded-xl p-6 space-y-4">
           <h2 class="text-2xl font-semibold">Secure your lifetime licence</h2>
-          <label class="block text-sm text-slate-300" for="emailInput">Email address for receipt + licence delivery</label>
+          <label class="block text-sm text-slate-300" for="emailInput"
+            >Email address for receipt + licence delivery</label
+          >
           <input
             id="emailInput"
             type="email"
@@ -70,31 +76,34 @@
     </main>
 
     <script type="module">
-      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+      import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
       const BRAND_CONFIG = {
         studentlyai: {
-          name: 'StudentlyAI',
-          tagline: 'Your local-first study companion.',
-          primary: 'rgb(249 115 22)',
+          name: "StudentlyAI",
+          tagline: "Your local-first study companion.",
+          primary: "rgb(249 115 22)",
+          currency: "£",
         },
         studentsai_uk: {
-          name: 'StudentsAI UK',
-          tagline: 'Academic excellence for UK learners.',
-          primary: 'rgb(30 58 138)',
+          name: "StudentsAI UK",
+          tagline: "Academic excellence for UK learners.",
+          primary: "rgb(30 58 138)",
+          currency: "£",
         },
         studentsai_us: {
-          name: 'StudentsAI US',
-          tagline: 'Study smarter with trusted AI.',
-          primary: 'rgb(3 105 161)',
-        }
+          name: "StudentsAI US",
+          tagline: "Study smarter with trusted AI.",
+          primary: "rgb(3 105 161)",
+          currency: "$",
+        },
       };
 
-      const dataset = document.body.dataset;
       const urlParams = new URLSearchParams(window.location.search);
-      const brandKey = urlParams.get('brand') ?? 'studentlyai';
+      const brandKey = urlParams.get("brand") ?? "studentlyai";
       const brand = BRAND_CONFIG[brandKey] ?? BRAND_CONFIG.studentlyai;
 
+      const dataset = document.body.dataset;
       const config = {
         supabaseUrl: dataset.supabaseUrl,
         supabaseAnonKey: dataset.supabaseAnonKey,
@@ -103,39 +112,48 @@
         paypalClientId: dataset.paypalClientId,
       };
 
-      const messageEl = document.getElementById('message');
-      const emailInput = document.getElementById('emailInput');
-      const tierPriceEl = document.getElementById('tierPrice');
-      const tierProgressLabel = document.getElementById('tierProgressLabel');
-      const tierProgressBar = document.getElementById('tierProgressBar');
-      const tierNoteEl = document.getElementById('tierNote');
+      const messageEl = document.getElementById("message");
+      const emailInput = document.getElementById("emailInput");
+      const tierPriceEl = document.getElementById("tierPrice");
+      const tierProgressLabel = document.getElementById("tierProgressLabel");
+      const tierProgressBar = document.getElementById("tierProgressBar");
+      const tierNoteEl = document.getElementById("tierNote");
 
-      const brandNameEl = document.getElementById('brandName');
-      const brandTaglineEl = document.getElementById('brandTagline');
+      const brandNameEl = document.getElementById("brandName");
+      const brandTaglineEl = document.getElementById("brandTagline");
       brandNameEl.textContent = brand.name;
       brandTaglineEl.textContent = brand.tagline;
       tierProgressBar.style.backgroundColor = brand.primary;
 
-      const supabaseUrl = config.supabaseUrl && config.supabaseUrl !== 'SUPABASE_URL_PLACEHOLDER' ? config.supabaseUrl : null;
+      const supabaseUrl =
+        config.supabaseUrl && config.supabaseUrl !== "SUPABASE_URL_PLACEHOLDER"
+          ? config.supabaseUrl
+          : null;
       const supabaseAnonKey =
-        config.supabaseAnonKey && config.supabaseAnonKey !== 'SUPABASE_ANON_KEY_PLACEHOLDER'
+        config.supabaseAnonKey &&
+        config.supabaseAnonKey !== "SUPABASE_ANON_KEY_PLACEHOLDER"
           ? config.supabaseAnonKey
           : null;
 
       if (!supabaseUrl || !supabaseAnonKey) {
-        messageEl.textContent = 'Supabase credentials missing. Update data attributes before deploying.';
+        messageEl.textContent =
+          "Supabase credentials missing. Update data attributes before deploying.";
       }
 
-      const supabase = supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+      const supabase =
+        supabaseUrl && supabaseAnonKey
+          ? createClient(supabaseUrl, supabaseAnonKey)
+          : null;
 
       async function fetchTier() {
-        if (!supabase) {
-          return null;
-        }
-        const { data, error } = await supabase.rpc('get_current_tier', { p_brand_id: brandKey });
+        if (!supabase) return null;
+        const { data, error } = await supabase.rpc("get_current_tier", {
+          p_brand_id: brandKey,
+        });
         if (error) {
-          console.error('Failed to load tier', error);
-          messageEl.textContent = 'Unable to load tier data. Please refresh or try again later.';
+          console.error("Failed to load tier", error);
+          messageEl.textContent =
+            "Unable to load tier data. Please refresh or try again later.";
           return null;
         }
         const tier = Array.isArray(data) ? data[0] : data;
@@ -144,30 +162,30 @@
 
       let currencyCache = null;
       async function fetchBrandCurrency() {
-        if (currencyCache) {
-          return currencyCache;
-        }
+        if (currencyCache) return currencyCache;
         if (!supabase) {
-          currencyCache = brandKey.includes('us') ? 'USD' : 'GBP';
+          currencyCache = brandKey.includes("us") ? "USD" : "GBP";
           return currencyCache;
         }
         const { data, error } = await supabase
-          .from('brands')
-          .select('default_currency')
-          .eq('id', brandKey)
+          .from("brands")
+          .select("default_currency")
+          .eq("id", brandKey)
           .maybeSingle();
         if (error) {
-          console.warn('Currency lookup failed', error);
-          currencyCache = brandKey.includes('us') ? 'USD' : 'GBP';
+          console.warn("Currency lookup failed", error);
+          currencyCache = brandKey.includes("us") ? "USD" : "GBP";
           return currencyCache;
         }
-        currencyCache = data?.default_currency ?? (brandKey.includes('us') ? 'USD' : 'GBP');
+        currencyCache =
+          data?.default_currency ??
+          (brandKey.includes("us") ? "USD" : "GBP");
         return currencyCache;
       }
 
       function formatCurrency(currency, amount) {
         const formatter = new Intl.NumberFormat(undefined, {
-          style: 'currency',
+          style: "currency",
           currency,
           minimumFractionDigits: 2,
         });
@@ -175,84 +193,101 @@
       }
 
       fetchTier().then(async (tier) => {
-        if (!tier) {
-          return;
-        }
+        if (!tier) return;
 
         const currency = await fetchBrandCurrency();
         tierPriceEl.textContent = `${formatCurrency(currency, tier.price)} lifetime`;
-        const capLabel = tier.cap ? tier.cap.toLocaleString() : '∞';
+        const capLabel = tier.cap ? tier.cap.toLocaleString() : "∞";
         tierProgressLabel.textContent = `${tier.sold.toLocaleString()} / ${capLabel}`;
-        const progress = tier.cap ? Math.min(100, (tier.sold / tier.cap) * 100) : 0;
-        tierProgressBar.style.width = `${Number.isFinite(progress) ? progress : 0}%`;
+        const progress = tier.cap
+          ? Math.min(100, (tier.sold / tier.cap) * 100)
+          : 0;
+        tierProgressBar.style.width = `${
+          Number.isFinite(progress) ? progress : 0
+        }%`;
         tierNoteEl.textContent = tier.cap
           ? `${capLabel} licences available before price increases to the next tier.`
-          : 'Final tier – price will not increase further.';
+          : "Final tier – price will not increase further.";
       });
 
       function requireEmail() {
         if (!emailInput.value) {
-          messageEl.textContent = 'Enter your email address to continue.';
+          messageEl.textContent = "Enter your email address to continue.";
           emailInput.focus();
           return false;
         }
-        messageEl.textContent = '';
+        messageEl.textContent = "";
         return true;
       }
 
       const stripeKey =
-        config.stripePublishableKey && config.stripePublishableKey !== 'STRIPE_PUBLISHABLE_KEY_PLACEHOLDER'
+        config.stripePublishableKey &&
+        config.stripePublishableKey !== "STRIPE_PUBLISHABLE_KEY_PLACEHOLDER"
           ? config.stripePublishableKey
           : null;
-      const stripePromise = stripeKey && window.Stripe ? Promise.resolve(window.Stripe(stripeKey)) : null;
+      const stripePromise =
+        stripeKey && window.Stripe
+          ? Promise.resolve(window.Stripe(stripeKey))
+          : null;
 
-      document.getElementById('stripeButton').addEventListener('click', async () => {
-        if (!requireEmail()) {
-          return;
-        }
-        if (!config.licenceServerUrl || config.licenceServerUrl === 'LICENCE_SERVER_URL_PLACEHOLDER') {
-          messageEl.textContent = 'Checkout server URL missing. Update deployment configuration.';
-          return;
-        }
-        try {
-          const response = await fetch(`${config.licenceServerUrl}/create-checkout-session`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              brandId: brandKey,
-              email: emailInput.value,
-              provider: 'stripe',
-              successUrl: `${window.location.origin}/success?brand=${brandKey}`,
-              cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
-            }),
-          });
-
-          const payload = await response.json();
-          if (!response.ok) {
-            messageEl.textContent = payload.error ?? 'Unable to start Stripe checkout.';
+      document
+        .getElementById("stripeButton")
+        .addEventListener("click", async () => {
+          if (!requireEmail()) return;
+          if (
+            !config.licenceServerUrl ||
+            config.licenceServerUrl === "LICENCE_SERVER_URL_PLACEHOLDER"
+          ) {
+            messageEl.textContent =
+              "Checkout server URL missing. Update deployment configuration.";
             return;
           }
+          try {
+            const response = await fetch(
+              `${config.licenceServerUrl}/create-checkout-session`,
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  brandId: brandKey,
+                  email: emailInput.value,
+                  provider: "stripe",
+                  successUrl: `${window.location.origin}/success?brand=${brandKey}`,
+                  cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
+                }),
+              }
+            );
 
-          if (stripePromise && payload.sessionId) {
-            const stripe = await stripePromise;
-            await stripe.redirectToCheckout({ sessionId: payload.sessionId });
-          } else if (payload.checkoutUrl) {
-            window.location.href = payload.checkoutUrl;
+            const payload = await response.json();
+            if (!response.ok) {
+              messageEl.textContent =
+                payload.error ?? "Unable to start Stripe checkout.";
+              return;
+            }
+
+            if (stripePromise && payload.sessionId) {
+              const stripe = await stripePromise;
+              await stripe.redirectToCheckout({
+                sessionId: payload.sessionId,
+              });
+            } else if (payload.checkoutUrl) {
+              window.location.href = payload.checkoutUrl;
+            }
+          } catch (error) {
+            console.error("Stripe checkout failed", error);
+            messageEl.textContent = "Stripe checkout failed. Please try again.";
           }
-        } catch (error) {
-          console.error('Stripe checkout failed', error);
-          messageEl.textContent = 'Stripe checkout failed. Please try again.';
-        }
-      });
+        });
 
       const paypalClientId =
-        config.paypalClientId && config.paypalClientId !== 'PAYPAL_CLIENT_ID_PLACEHOLDER'
+        config.paypalClientId &&
+        config.paypalClientId !== "PAYPAL_CLIENT_ID_PLACEHOLDER"
           ? config.paypalClientId
           : null;
 
       if (paypalClientId) {
         fetchBrandCurrency().then((currency) => {
-          const paypalScript = document.createElement('script');
+          const paypalScript = document.createElement("script");
           paypalScript.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=${currency}`;
           paypalScript.onload = renderPaypalButton;
           document.head.appendChild(paypalScript);
@@ -260,54 +295,61 @@
       }
 
       async function renderPaypalButton() {
-        if (!window.paypal) {
-          return;
-        }
+        if (!window.paypal) return;
         const currency = await fetchBrandCurrency();
         window.paypal
           .Buttons({
             createOrder: async () => {
-              if (!requireEmail()) {
-                throw new Error('Email required');
+              if (!requireEmail()) throw new Error("Email required");
+              if (
+                !config.licenceServerUrl ||
+                config.licenceServerUrl === "LICENCE_SERVER_URL_PLACEHOLDER"
+              ) {
+                messageEl.textContent =
+                  "Checkout server URL missing. Update deployment configuration.";
+                throw new Error("Checkout server URL missing");
               }
-              if (!config.licenceServerUrl || config.licenceServerUrl === 'LICENCE_SERVER_URL_PLACEHOLDER') {
-                messageEl.textContent = 'Checkout server URL missing. Update deployment configuration.';
-                throw new Error('Checkout server URL missing');
-              }
-              const response = await fetch(`${config.licenceServerUrl}/create-checkout-session`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  brandId: brandKey,
-                  email: emailInput.value,
-                  provider: 'paypal',
-                  successUrl: `${window.location.origin}/success?brand=${brandKey}`,
-                  cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
-                }),
-              });
+              const response = await fetch(
+                `${config.licenceServerUrl}/create-checkout-session`,
+                {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    brandId: brandKey,
+                    email: emailInput.value,
+                    provider: "paypal",
+                    successUrl: `${window.location.origin}/success?brand=${brandKey}`,
+                    cancelUrl: `${window.location.origin}/cancelled?brand=${brandKey}`,
+                  }),
+                }
+              );
               const payload = await response.json();
               if (!response.ok) {
-                messageEl.textContent = payload.error ?? 'Unable to start PayPal checkout.';
-                throw new Error(payload.error ?? 'PayPal checkout failed');
+                messageEl.textContent =
+                  payload.error ?? "Unable to start PayPal checkout.";
+                throw new Error(payload.error ?? "PayPal checkout failed");
               }
               return payload.orderId;
             },
             onApprove: async (data, actions) => {
-              messageEl.textContent = 'Processing PayPal payment…';
+              messageEl.textContent = "Processing PayPal payment…";
               try {
                 await actions.order?.capture();
-                messageEl.textContent = 'Payment received! Check your email for the licence code.';
+                messageEl.textContent =
+                  "Payment received! Check your email for the licence code.";
               } catch (error) {
-                console.error('PayPal capture failed', error);
-                messageEl.textContent = 'PayPal capture failed. Please contact support.';
+                console.error("PayPal capture failed", error);
+                messageEl.textContent =
+                  "PayPal capture failed. Please contact support.";
               }
             },
             onError: (error) => {
-              console.error('PayPal error', error);
-              messageEl.textContent = 'PayPal checkout failed. Please try again.';
+              console.error("PayPal error", error);
+              messageEl.textContent =
+                "PayPal checkout failed. Please try again.";
             },
           })
-          .render('#paypalContainer');
+          .render("#paypalContainer");
       }
     </script>
   </body>

@@ -4,8 +4,11 @@ CREATE TABLE IF NOT EXISTS addons (
     brand_scope TEXT[] DEFAULT ARRAY[]::TEXT[],
     display_name TEXT NOT NULL,
     description TEXT NOT NULL,
+codex/create-working-plan-from-agents.md-gyf1jn
     price_cents INTEGER NOT NULL DEFAULT 0,
     currency TEXT NOT NULL DEFAULT 'GBP',
+
+main
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -35,6 +38,7 @@ CREATE TABLE IF NOT EXISTS addon_installs (
 );
 
 CREATE OR REPLACE FUNCTION get_available_addons(p_brand_id TEXT)
+codex/create-working-plan-from-agents.md-gyf1jn
 RETURNS TABLE (
     id TEXT,
     display_name TEXT,
@@ -54,6 +58,16 @@ BEGIN
         OR array_length(a.brand_scope, 1) = 0
         OR p_brand_id = ANY(a.brand_scope)
      ORDER BY a.display_name;
+
+RETURNS SETOF addons AS $$
+BEGIN
+    RETURN QUERY
+    SELECT *
+      FROM addons
+     WHERE brand_scope IS NULL
+        OR array_length(brand_scope, 1) = 0
+        OR p_brand_id = ANY(brand_scope);
+main
 END;
 $$ LANGUAGE plpgsql;
 
@@ -78,6 +92,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+codex/create-working-plan-from-agents.md-gyf1jn
 CREATE OR REPLACE FUNCTION record_addon_purchase(
     p_addon_id TEXT,
     p_brand_id TEXT,
@@ -121,6 +136,15 @@ VALUES
     ('study_skills_pack', ARRAY['studentlyai','studentsai_uk'], 'Study Skills Pack', 'Timetable automation, revision prompts, and flashcards.', 1500, 'GBP'),
     ('career_pack', ARRAY['studentsai_us'], 'Career Pack', 'CV builder, interview prep, and job tracking.', 1500, 'USD'),
     ('classroom_pack', ARRAY['studentlyai'], 'Classroom Pack', 'Group collaboration tools and peer feedback workflows.', 1200, 'GBP')
+
+-- Seed starter add-ons
+INSERT INTO addons (id, brand_scope, display_name, description)
+VALUES
+    ('research_pack', ARRAY['studentlyai','studentsai_uk','studentsai_us'], 'Research Pack', 'Deep research, citations, and academic tone assistance.'),
+    ('study_skills_pack', ARRAY['studentlyai','studentsai_uk'], 'Study Skills Pack', 'Timetable automation, revision prompts, and flashcards.'),
+    ('career_pack', ARRAY['studentsai_us'], 'Career Pack', 'CV builder, interview prep, and job tracking.'),
+    ('classroom_pack', ARRAY['studentlyai'], 'Classroom Pack', 'Group collaboration tools and peer feedback workflows.')
+main
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO addon_versions (addon_id, version, download_url, release_notes)
